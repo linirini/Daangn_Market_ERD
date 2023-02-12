@@ -1,6 +1,5 @@
 # DaangnMarket
 [DaangnMarket] ERD &amp; one-shot Query
 
-![당근마켓_20230213_034028](https://user-images.githubusercontent.com/101927543/218330322-ef11680c-c65c-4e82-b695-2bb9be4dd01e.png)
-
+![당근마켓_20230213_034250](https://user-images.githubusercontent.com/101927543/218330423-cd2a6915-1d14-4a55-999d-20a590e7cd18.png)
 
