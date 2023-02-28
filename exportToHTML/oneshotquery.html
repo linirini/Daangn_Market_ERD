@@ -1,0 +1,724 @@
+<html>
+<head>
+<title>console.sql</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.s0 { color: #808080;}
+.s1 { color: #a9b7c6;}
+.s2 { color: #cc7832;}
+.s3 { color: #6897bb;}
+.s4 { color: #6a8759;}
+</style>
+</head>
+<body bgcolor="#2b2b2b">
+<table CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#606060" >
+<tr><td><center>
+<font face="Arial, Helvetica" color="#000000">
+console.sql</font>
+</center></td></tr></table>
+<pre><span class="s0">###활동 배지 화면</span>
+<span class="s2">Select </span><span class="s1">*</span>
+<span class="s2">from </span><span class="s1">Badge</span>
+<span class="s2">where </span><span class="s1">userId = </span><span class="s3">1</span><span class="s2">;</span>
+
+<span class="s0">#Sub Query</span>
+<span class="s2">Select </span><span class="s1">activeBadgeImgUrl</span><span class="s2">, </span><span class="s1">badgeName</span>
+<span class="s2">from </span><span class="s1">BadgeTag</span>
+<span class="s2">where </span><span class="s1">badgeTagId </span><span class="s2">in </span><span class="s1">(</span><span class="s2">Select </span><span class="s1">badgeTagId </span><span class="s2">from </span><span class="s1">Badge </span><span class="s2">where </span><span class="s1">userId = </span><span class="s3">1</span><span class="s1">)</span><span class="s2">;</span>
+<span class="s2">Select </span><span class="s1">deletedBadgeImgUrl</span><span class="s2">, </span><span class="s1">badgeName</span>
+<span class="s2">from </span><span class="s1">BadgeTag</span>
+<span class="s2">where </span><span class="s1">badgeTagId </span><span class="s2">not in </span><span class="s1">(</span><span class="s2">Select </span><span class="s1">badgeTagId </span><span class="s2">from </span><span class="s1">Badge </span><span class="s2">where </span><span class="s1">userId = </span><span class="s3">1</span><span class="s1">)</span><span class="s2">;</span>
+<span class="s2">Select </span><span class="s1">badgeTagId</span>
+<span class="s2">from </span><span class="s1">Badge</span>
+<span class="s2">where </span><span class="s1">userId = </span><span class="s3">1</span>
+  <span class="s2">and </span><span class="s1">badgeStatus = </span><span class="s4">'ACTIVE'</span><span class="s2">;</span>
+
+<span class="s0">#Join</span>
+<span class="s2">SELECT </span><span class="s1">activeBadgeImgUrl </span><span class="s2">AS </span><span class="s1">badgeImgUrl</span><span class="s2">,</span>
+       <span class="s1">badgeName</span><span class="s2">,</span>
+       <span class="s4">'ACTIVE'          </span><span class="s2">AS </span><span class="s1">obtainStatus</span><span class="s2">,</span>
+       <span class="s2">CASE</span>
+           <span class="s2">WHEN </span><span class="s1">badgeStatus = </span><span class="s4">'ACTIVE'</span>
+               <span class="s2">THEN </span><span class="s4">'ACTIVE'</span>
+           <span class="s2">ELSE </span><span class="s4">'DELETED'</span>
+           <span class="s2">END           AS </span><span class="s1">representativeBadge</span>
+<span class="s2">FROM </span><span class="s1">BadgeTag</span>
+         <span class="s2">INNER JOIN </span><span class="s1">Badge</span>
+<span class="s2">WHERE </span><span class="s1">BadgeTag.badgeTagId = Badge.badgeTagId</span>
+<span class="s2">GROUP BY </span><span class="s1">userId = </span><span class="s3">1</span>
+<span class="s2">UNION</span>
+<span class="s2">SELECT </span><span class="s1">deletedBadgeImgUrl </span><span class="s2">AS </span><span class="s1">badgeImgUrl</span><span class="s2">,</span>
+       <span class="s1">badgeName</span><span class="s2">,</span>
+       <span class="s4">'DELETED'          </span><span class="s2">AS </span><span class="s1">obtainStatus</span><span class="s2">,</span>
+       <span class="s4">'DELETED'          </span><span class="s2">AS </span><span class="s1">representativeBadge</span>
+<span class="s2">FROM </span><span class="s1">BadgeTag</span>
+<span class="s2">WHERE </span><span class="s1">badgeTagId </span><span class="s2">NOT IN </span><span class="s1">(</span><span class="s2">SELECT </span><span class="s1">badgeTagId </span><span class="s2">FROM </span><span class="s1">Badge </span><span class="s2">WHERE </span><span class="s1">userId = </span><span class="s3">1</span><span class="s1">)</span><span class="s2">;</span>
+
+<span class="s0">###매너 평가</span>
+<span class="s2">SELECT </span><span class="s1">*</span>
+<span class="s2">FROM </span><span class="s1">MannerTag</span>
+<span class="s2">WHERE </span><span class="s1">userId = </span><span class="s3">1</span><span class="s2">;</span>
+
+<span class="s0">#Sub Query</span>
+<span class="s2">SELECT </span><span class="s1">mannerTagCategoryId</span><span class="s2">, </span><span class="s1">mannerTagName</span>
+<span class="s2">FROM </span><span class="s1">MannerTagCategory</span><span class="s2">;</span>
+<span class="s2">SELECT </span><span class="s1">mannerTagCategoryId</span><span class="s2">, COUNT</span><span class="s1">(mannerTagCategoryId) </span><span class="s2">as </span><span class="s1">mannerTagCategoryCount</span>
+<span class="s2">FROM </span><span class="s1">MannerTag</span>
+<span class="s2">WHERE </span><span class="s1">userId = </span><span class="s3">1</span>
+<span class="s2">GROUP BY </span><span class="s1">mannerTagCategoryId</span>
+<span class="s2">ORDER BY </span><span class="s1">mannerTagCategoryCount </span><span class="s2">DESC;</span>
+
+<span class="s0">#Join</span>
+<span class="s2">SELECT </span><span class="s1">mannerTagName</span><span class="s2">, </span><span class="s3">0 </span><span class="s2">as </span><span class="s1">mannerTagCategoryCount</span>
+<span class="s2">FROM </span><span class="s1">MannerTagCategory</span>
+<span class="s2">WHERE </span><span class="s1">mannerTagCategoryId </span><span class="s2">NOT IN </span><span class="s1">(</span><span class="s2">SELECT </span><span class="s1">mannerTagCategoryId </span><span class="s2">FROM </span><span class="s1">MannerTag </span><span class="s2">WHERE </span><span class="s1">userId = </span><span class="s3">1</span><span class="s1">)</span>
+<span class="s2">UNION</span>
+<span class="s2">SELECT </span><span class="s1">mannerTagName</span><span class="s2">, COUNT</span><span class="s1">(MannerTag.mannerTagCategoryId) </span><span class="s2">as </span><span class="s1">mannerTagCategoryCount</span>
+<span class="s2">FROM </span><span class="s1">MannerTag</span>
+         <span class="s2">INNER JOIN </span><span class="s1">MannerTagCategory</span>
+<span class="s2">WHERE </span><span class="s1">userId = </span><span class="s3">1</span>
+  <span class="s2">AND </span><span class="s1">MannerTag.mannerTagCategoryId = MannerTagCategory.mannerTagCategoryId</span>
+<span class="s2">GROUP BY </span><span class="s1">MannerTag.mannerTagCategoryId</span>
+<span class="s2">ORDER BY </span><span class="s1">mannerTagCategoryCount </span><span class="s2">DESC;</span>
+
+<span class="s0">###게시글</span>
+<span class="s2">SELECT </span><span class="s1">*</span>
+<span class="s2">FROM User</span>
+         <span class="s2">INNER JOIN </span><span class="s1">Post</span>
+<span class="s2">WHERE </span><span class="s1">Post.userId = </span><span class="s2">User</span><span class="s1">.userId</span><span class="s2">;</span>
+<span class="s2">SELECT </span><span class="s1">*</span>
+<span class="s2">FROM </span><span class="s1">Address</span>
+<span class="s2">WHERE </span><span class="s1">Address.userId </span><span class="s2">IN </span><span class="s1">(</span><span class="s2">SELECT User</span><span class="s1">.userId</span>
+                         <span class="s2">FROM User</span>
+                                  <span class="s2">INNER JOIN </span><span class="s1">Post</span>
+                         <span class="s2">WHERE </span><span class="s1">Post.userId = </span><span class="s2">User</span><span class="s1">.userId)</span><span class="s2">;</span>
+<span class="s2">SELECT </span><span class="s1">*</span>
+<span class="s2">FROM </span><span class="s1">Post</span>
+<span class="s2">WHERE </span><span class="s1">postId = </span><span class="s3">1</span><span class="s2">;</span>
+<span class="s2">Select </span><span class="s1">*</span>
+<span class="s2">FROM </span><span class="s1">ProductSubCategory</span>
+         <span class="s2">INNER JOIN </span><span class="s1">Post</span>
+<span class="s2">WHERE </span><span class="s1">Post.postId = ProductSubCategory.postId</span><span class="s2">;</span>
+<span class="s2">Select </span><span class="s1">*</span>
+<span class="s2">FROM </span><span class="s1">Category</span><span class="s2">;</span>
+<span class="s2">SELECT </span><span class="s1">*</span>
+<span class="s2">FROM </span><span class="s1">Interest</span>
+<span class="s2">where </span><span class="s1">postId = </span><span class="s3">1</span><span class="s2">;</span>
+<span class="s2">SELECT </span><span class="s1">*</span>
+<span class="s2">FROM </span><span class="s1">ChatRoom</span>
+<span class="s2">where </span><span class="s1">postId = </span><span class="s3">1</span><span class="s2">;</span>
+
+<span class="s0">#Sub Query</span>
+<span class="s2">SELECT </span><span class="s1">nickname</span><span class="s2">, </span><span class="s1">mannerTemp</span>
+<span class="s2">FROM User</span>
+         <span class="s2">INNER JOIN </span><span class="s1">Post</span>
+<span class="s2">WHERE </span><span class="s1">Post.userId = </span><span class="s2">User</span><span class="s1">.userId</span><span class="s2">;</span>
+<span class="s2">SELECT </span><span class="s1">address</span>
+<span class="s2">FROM </span><span class="s1">Address</span>
+<span class="s2">WHERE </span><span class="s1">Address.userId </span><span class="s2">IN </span><span class="s1">(</span><span class="s2">SELECT User</span><span class="s1">.userId</span>
+                         <span class="s2">FROM User</span>
+                                  <span class="s2">INNER JOIN </span><span class="s1">Post</span>
+                         <span class="s2">WHERE </span><span class="s1">Post.userId = </span><span class="s2">User</span><span class="s1">.userId)</span>
+  <span class="s2">AND </span><span class="s1">addressStatus = </span><span class="s4">'ACTIVE'</span><span class="s2">;</span>
+<span class="s2">SELECT </span><span class="s1">title</span><span class="s2">, </span><span class="s1">pullup</span><span class="s2">, </span><span class="s1">createdAt</span><span class="s2">, </span><span class="s1">updatedAt</span><span class="s2">, </span><span class="s1">content</span><span class="s2">, </span><span class="s1">price</span><span class="s2">, </span><span class="s1">priceProposal</span>
+<span class="s2">FROM </span><span class="s1">Post</span>
+<span class="s2">WHERE </span><span class="s1">PostId = </span><span class="s3">1</span><span class="s2">;</span>
+<span class="s2">SELECT </span><span class="s1">categoryId</span>
+<span class="s2">FROM </span><span class="s1">ProductSubCategory</span>
+         <span class="s2">INNER JOIN </span><span class="s1">Post</span>
+<span class="s2">WHERE </span><span class="s1">Post.postId = ProductSubCategory.postId</span><span class="s2">;</span>
+<span class="s2">SELECT </span><span class="s1">categoryName</span>
+<span class="s2">FROM </span><span class="s1">Category</span>
+<span class="s2">WHERE </span><span class="s1">categoryId = </span><span class="s3">2</span><span class="s2">;</span>
+<span class="s2">SELECT Count</span><span class="s1">(interestId) </span><span class="s2">AS </span><span class="s1">interestCount</span>
+<span class="s2">FROM </span><span class="s1">Interest</span>
+         <span class="s2">INNER JOIN </span><span class="s1">Post</span>
+<span class="s2">WHERE </span><span class="s1">Post.postId = Interest.postId</span><span class="s2">;</span>
+<span class="s2">SELECT Count</span><span class="s1">(chatRoomId) </span><span class="s2">AS </span><span class="s1">chatCount</span>
+<span class="s2">FROM </span><span class="s1">ChatRoom</span>
+         <span class="s2">INNER JOIN </span><span class="s1">Post</span>
+<span class="s2">WHERE </span><span class="s1">Post.postId = ChatRoom.postId</span><span class="s2">;</span>
+
+<span class="s0">#Join</span>
+<span class="s2">SELECT </span><span class="s1">nickname</span><span class="s2">,</span>
+       <span class="s1">mannerTemp</span><span class="s2">,</span>
+       <span class="s1">address</span><span class="s2">,</span>
+       <span class="s1">Category.categoryName </span><span class="s2">AS </span><span class="s1">category</span><span class="s2">,</span>
+       <span class="s2">Count</span><span class="s1">(interestId)     </span><span class="s2">AS </span><span class="s1">interestCount</span><span class="s2">,</span>
+       <span class="s2">Count</span><span class="s1">(chatRoomId)     </span><span class="s2">AS </span><span class="s1">chatCount</span><span class="s2">,</span>
+       <span class="s1">title</span><span class="s2">,</span>
+       <span class="s1">content</span><span class="s2">,</span>
+       <span class="s2">CASE</span>
+           <span class="s2">WHEN </span><span class="s1">pullUp = </span><span class="s4">'ACTIVE'</span>
+               <span class="s2">THEN </span><span class="s4">'끌올'</span>
+           <span class="s2">ELSE </span><span class="s4">''</span>
+           <span class="s2">END               AS </span><span class="s1">pullUp</span><span class="s2">,</span>
+       <span class="s2">CASE</span>
+           <span class="s2">WHEN </span><span class="s1">priceProposal = </span><span class="s4">'ACTIVE'</span>
+               <span class="s2">THEN </span><span class="s4">'가격 제안 받기'</span>
+           <span class="s2">ELSE </span><span class="s4">''</span>
+           <span class="s2">END               AS </span><span class="s1">priceProposal</span><span class="s2">,</span>
+       <span class="s1">price</span><span class="s2">,</span>
+       <span class="s2">CASE</span>
+           <span class="s2">WHEN </span><span class="s1">pullUp = </span><span class="s4">'ACTIVE'</span>
+               <span class="s2">THEN </span><span class="s1">(</span><span class="s2">CASE</span>
+                         <span class="s2">WHEN </span><span class="s1">TIMESTAMPDIFF(</span><span class="s2">second, </span><span class="s1">Post.updatedAt</span><span class="s2">, current_timestamp</span><span class="s1">()) &lt; </span><span class="s3">60</span>
+                             <span class="s2">THEN </span><span class="s1">CONCAT(TIMESTAMPDIFF(</span><span class="s2">second, </span><span class="s1">Post.updatedAt</span><span class="s2">, current_timestamp</span><span class="s1">())</span><span class="s2">, </span><span class="s4">' 초 전'</span><span class="s1">)</span>
+                         <span class="s2">WHEN </span><span class="s1">TIMESTAMPDIFF(</span><span class="s2">minute, </span><span class="s1">Post.updatedAt</span><span class="s2">, current_timestamp</span><span class="s1">()) &lt; </span><span class="s3">60</span>
+                             <span class="s2">THEN </span><span class="s1">CONCAT(TIMESTAMPDIFF(</span><span class="s2">minute, </span><span class="s1">Post.updatedAt</span><span class="s2">, current_timestamp</span><span class="s1">())</span><span class="s2">, </span><span class="s4">' 분 전'</span><span class="s1">)</span>
+                         <span class="s2">WHEN </span><span class="s1">TIMESTAMPDIFF(</span><span class="s2">hour, </span><span class="s1">Post.updatedAt</span><span class="s2">, current_timestamp</span><span class="s1">()) &lt; </span><span class="s3">24</span>
+                             <span class="s2">THEN </span><span class="s1">CONCAT(TIMESTAMPDIFF(</span><span class="s2">hour, </span><span class="s1">Post.updatedAt</span><span class="s2">, current_timestamp</span><span class="s1">())</span><span class="s2">, </span><span class="s4">' 시간 전'</span><span class="s1">)</span>
+                         <span class="s2">WHEN </span><span class="s1">TIMESTAMPDIFF(</span><span class="s2">hour, </span><span class="s1">Post.updatedAt</span><span class="s2">, current_timestamp</span><span class="s1">()) &gt; </span><span class="s3">24</span>
+                             <span class="s2">THEN </span><span class="s4">'어제'</span>
+                         <span class="s2">WHEN </span><span class="s1">TIMESTAMPDIFF(</span><span class="s2">hour, </span><span class="s1">Post.updatedAt</span><span class="s2">, current_timestamp</span><span class="s1">()) &gt; </span><span class="s3">48</span>
+                             <span class="s2">THEN </span><span class="s4">'그저께'</span>
+                         <span class="s2">WHEN </span><span class="s1">DATEDIFF(Post.updatedAt</span><span class="s2">, current_date</span><span class="s1">()) &lt; </span><span class="s3">31</span>
+                             <span class="s2">THEN </span><span class="s1">CONCAT(DATEDIFF(Post.updatedAt</span><span class="s2">, current_timestamp</span><span class="s1">)</span><span class="s2">, </span><span class="s4">' 일 전'</span><span class="s1">)</span>
+                         <span class="s2">ELSE </span><span class="s1">DATE_FORMAT(Post.updatedAt</span><span class="s2">, </span><span class="s4">'%c 월 %c 일'</span><span class="s1">)</span>
+               <span class="s2">END</span><span class="s1">)</span>
+           <span class="s2">ELSE </span><span class="s1">(</span><span class="s2">CASE</span>
+                     <span class="s2">WHEN </span><span class="s1">TIMESTAMPDIFF(</span><span class="s2">second, </span><span class="s1">Post.createdAt</span><span class="s2">, current_timestamp</span><span class="s1">()) &lt; </span><span class="s3">60</span>
+                         <span class="s2">THEN </span><span class="s1">CONCAT(TIMESTAMPDIFF(</span><span class="s2">second, </span><span class="s1">Post.createdAt</span><span class="s2">, current_timestamp</span><span class="s1">())</span><span class="s2">, </span><span class="s4">' 초 전'</span><span class="s1">)</span>
+                     <span class="s2">WHEN </span><span class="s1">TIMESTAMPDIFF(</span><span class="s2">minute, </span><span class="s1">Post.createdAt</span><span class="s2">, current_timestamp</span><span class="s1">()) &lt; </span><span class="s3">60</span>
+                         <span class="s2">THEN </span><span class="s1">CONCAT(TIMESTAMPDIFF(</span><span class="s2">minute, </span><span class="s1">Post.createdAt</span><span class="s2">, current_timestamp</span><span class="s1">())</span><span class="s2">, </span><span class="s4">' 분 전'</span><span class="s1">)</span>
+                     <span class="s2">WHEN </span><span class="s1">TIMESTAMPDIFF(</span><span class="s2">hour, </span><span class="s1">Post.createdAt</span><span class="s2">, current_timestamp</span><span class="s1">()) &lt; </span><span class="s3">24</span>
+                         <span class="s2">THEN </span><span class="s1">CONCAT(TIMESTAMPDIFF(</span><span class="s2">hour, </span><span class="s1">Post.createdAt</span><span class="s2">, current_timestamp</span><span class="s1">())</span><span class="s2">, </span><span class="s4">' 시간 전'</span><span class="s1">)</span>
+                     <span class="s2">WHEN </span><span class="s1">TIMESTAMPDIFF(</span><span class="s2">hour, </span><span class="s1">Post.createdAt</span><span class="s2">, current_timestamp</span><span class="s1">()) &gt; </span><span class="s3">24</span>
+                         <span class="s2">THEN </span><span class="s4">'어제'</span>
+                     <span class="s2">WHEN </span><span class="s1">TIMESTAMPDIFF(</span><span class="s2">hour, </span><span class="s1">Post.createdAt</span><span class="s2">, current_timestamp</span><span class="s1">()) &gt; </span><span class="s3">48</span>
+                         <span class="s2">THEN </span><span class="s4">'그저께'</span>
+                     <span class="s2">WHEN </span><span class="s1">DATEDIFF(Post.createdAt</span><span class="s2">, current_date</span><span class="s1">()) &lt; </span><span class="s3">31</span>
+                         <span class="s2">THEN </span><span class="s1">CONCAT(DATEDIFF(Post.createdAt</span><span class="s2">, current_timestamp</span><span class="s1">)</span><span class="s2">, </span><span class="s4">' 일 전'</span><span class="s1">)</span>
+                     <span class="s2">ELSE </span><span class="s1">DATE_FORMAT(Post.createdAt</span><span class="s2">, </span><span class="s4">'%c 월 %c 일'</span><span class="s1">)</span>
+               <span class="s2">END</span><span class="s1">)</span>
+           <span class="s2">END               AS </span><span class="s1">uploadedAt</span>
+<span class="s2">FROM </span><span class="s1">Post</span>
+         <span class="s2">INNER JOIN </span><span class="s1">Address</span><span class="s2">,</span>
+     <span class="s1">Category</span><span class="s2">,</span>
+     <span class="s1">Interest</span><span class="s2">,</span>
+     <span class="s1">ChatRoom</span><span class="s2">,</span>
+     <span class="s2">User</span>
+<span class="s2">WHERE </span><span class="s1">addressStatus = </span><span class="s4">'ACTIVE'</span>
+  <span class="s2">AND </span><span class="s1">Address.userId </span><span class="s2">IN </span><span class="s1">(</span><span class="s2">SELECT User</span><span class="s1">.userId</span>
+                         <span class="s2">FROM User</span>
+                                  <span class="s2">INNER JOIN </span><span class="s1">Post</span>
+                         <span class="s2">WHERE </span><span class="s1">Post.userId = </span><span class="s2">User</span><span class="s1">.userId)</span>
+  <span class="s2">AND </span><span class="s1">Category.categoryId = (</span><span class="s2">SELECT </span><span class="s1">categoryId</span>
+                             <span class="s2">FROM </span><span class="s1">ProductSubCategory</span>
+                                      <span class="s2">INNER JOIN </span><span class="s1">Post</span>
+                             <span class="s2">WHERE </span><span class="s1">Post.postId = ProductSubCategory.postId)</span>
+  <span class="s2">AND </span><span class="s1">Post.postId = Interest.postId</span>
+  <span class="s2">AND </span><span class="s1">Post.postId = ChatRoom.postId</span>
+  <span class="s2">AND </span><span class="s1">Post.userId = </span><span class="s2">User</span><span class="s1">.userId</span>
+<span class="s2">GROUP BY </span><span class="s1">Post.postId = </span><span class="s3">1</span><span class="s2">;</span>
+
+<span class="s0">###게시글 목록</span>
+<span class="s2">SELECT </span><span class="s1">*</span>
+<span class="s2">FROM User</span>
+         <span class="s2">INNER JOIN </span><span class="s1">Post</span>
+<span class="s2">WHERE </span><span class="s1">Post.userId = </span><span class="s2">User</span><span class="s1">.userId</span><span class="s2">;</span>
+<span class="s2">SELECT </span><span class="s1">*</span>
+<span class="s2">FROM </span><span class="s1">Address</span>
+<span class="s2">WHERE </span><span class="s1">Address.userId </span><span class="s2">IN </span><span class="s1">(</span><span class="s2">SELECT User</span><span class="s1">.userId</span>
+                         <span class="s2">FROM User</span>
+                                  <span class="s2">INNER JOIN </span><span class="s1">Post</span>
+                         <span class="s2">WHERE </span><span class="s1">Post.userId = </span><span class="s2">User</span><span class="s1">.userId)</span><span class="s2">;</span>
+<span class="s2">SELECT </span><span class="s1">*</span>
+<span class="s2">FROM </span><span class="s1">Post</span><span class="s2">;</span>
+<span class="s2">SELECT </span><span class="s1">*</span>
+<span class="s2">FROM </span><span class="s1">Interest</span>
+<span class="s2">GROUP BY </span><span class="s1">postId</span><span class="s2">;</span>
+<span class="s2">SELECT </span><span class="s1">*</span>
+<span class="s2">FROM </span><span class="s1">ChatRoom</span>
+<span class="s2">GROUP BY </span><span class="s1">postId</span><span class="s2">;</span>
+
+<span class="s0">#Sub Query</span>
+<span class="s2">SELECT </span><span class="s1">*</span>
+<span class="s2">FROM User</span>
+         <span class="s2">INNER JOIN </span><span class="s1">Post</span>
+<span class="s2">WHERE </span><span class="s1">Post.userId = </span><span class="s2">User</span><span class="s1">.userId</span>
+<span class="s2">GROUP BY User</span><span class="s1">.userId</span><span class="s2">;</span>
+<span class="s2">SELECT </span><span class="s1">address</span>
+<span class="s2">FROM </span><span class="s1">Address</span>
+<span class="s2">WHERE </span><span class="s1">Address.userId </span><span class="s2">IN </span><span class="s1">(</span><span class="s2">SELECT User</span><span class="s1">.userId</span>
+                         <span class="s2">FROM User</span>
+                                  <span class="s2">INNER JOIN </span><span class="s1">Post</span>
+                         <span class="s2">WHERE </span><span class="s1">Post.userId = </span><span class="s2">User</span><span class="s1">.userId</span>
+                         <span class="s2">GROUP BY User</span><span class="s1">.userId)</span>
+  <span class="s2">AND </span><span class="s1">addressStatus = </span><span class="s4">'ACTIVE'</span><span class="s2">;</span>
+<span class="s2">SELECT </span><span class="s1">title</span><span class="s2">, </span><span class="s1">pullup</span><span class="s2">, </span><span class="s1">createdAt</span><span class="s2">, </span><span class="s1">updatedAt</span><span class="s2">, </span><span class="s1">price</span>
+<span class="s2">FROM </span><span class="s1">Post</span>
+<span class="s2">WHERE </span><span class="s1">PostId = </span><span class="s3">1</span><span class="s2">;</span>
+<span class="s2">SELECT Count</span><span class="s1">(interestId) </span><span class="s2">AS </span><span class="s1">interestCount</span><span class="s2">, </span><span class="s1">Interest.postId</span>
+<span class="s2">FROM </span><span class="s1">Interest</span>
+         <span class="s2">INNER JOIN </span><span class="s1">Post</span>
+<span class="s2">WHERE </span><span class="s1">Post.postId = Interest.postId</span>
+<span class="s2">GROUP BY </span><span class="s1">Interest.postId</span><span class="s2">;</span>
+<span class="s2">SELECT Count</span><span class="s1">(chatRoomId) </span><span class="s2">AS </span><span class="s1">chatCount</span><span class="s2">, </span><span class="s1">ChatRoom.postId</span>
+<span class="s2">FROM </span><span class="s1">ChatRoom</span>
+         <span class="s2">INNER JOIN </span><span class="s1">Post</span>
+<span class="s2">WHERE </span><span class="s1">Post.postId = ChatRoom.postId</span>
+<span class="s2">GROUP BY </span><span class="s1">ChatRoom.postId</span><span class="s2">;</span>
+<span class="s2">SELECT Count</span><span class="s1">(commentId) </span><span class="s2">AS </span><span class="s1">commnetCount</span><span class="s2">, Comment</span><span class="s1">.postId</span>
+<span class="s2">FROM Comment</span>
+         <span class="s2">INNER JOIN </span><span class="s1">Post</span>
+<span class="s2">WHERE </span><span class="s1">Post.postId = </span><span class="s2">Comment</span><span class="s1">.postId</span>
+<span class="s2">GROUP BY Comment</span><span class="s1">.postId</span><span class="s2">;</span>
+
+<span class="s0">#Join</span>
+<span class="s2">SELECT </span><span class="s1">address</span><span class="s2">,</span>
+       <span class="s1">address           </span><span class="s2">AS </span><span class="s1">myAddress</span><span class="s2">,</span>
+       <span class="s2">Count</span><span class="s1">(interestId) </span><span class="s2">AS </span><span class="s1">interestCount</span><span class="s2">,</span>
+       <span class="s2">Count</span><span class="s1">(chatRoomId) </span><span class="s2">AS </span><span class="s1">chatCount</span><span class="s2">,</span>
+       <span class="s2">Count</span><span class="s1">(commentId)  </span><span class="s2">AS </span><span class="s1">commentCount</span><span class="s2">,</span>
+       <span class="s1">title</span><span class="s2">,</span>
+       <span class="s2">CASE</span>
+           <span class="s2">WHEN </span><span class="s1">pullUp = </span><span class="s4">'ACTIVE'</span>
+               <span class="s2">THEN </span><span class="s4">'끌올'</span>
+           <span class="s2">ELSE </span><span class="s4">''</span>
+           <span class="s2">END           AS </span><span class="s1">pullUp</span><span class="s2">,</span>
+       <span class="s1">price</span><span class="s2">,</span>
+       <span class="s2">CASE</span>
+           <span class="s2">WHEN </span><span class="s1">pullUp = </span><span class="s4">'ACTIVE'</span>
+               <span class="s2">THEN </span><span class="s1">(</span><span class="s2">CASE</span>
+                         <span class="s2">WHEN </span><span class="s1">TIMESTAMPDIFF(</span><span class="s2">second, </span><span class="s1">Post.updatedAt</span><span class="s2">, current_timestamp</span><span class="s1">()) &lt; </span><span class="s3">60</span>
+                             <span class="s2">THEN </span><span class="s1">CONCAT(TIMESTAMPDIFF(</span><span class="s2">second, </span><span class="s1">Post.updatedAt</span><span class="s2">, current_timestamp</span><span class="s1">())</span><span class="s2">, </span><span class="s4">' 초 전'</span><span class="s1">)</span>
+                         <span class="s2">WHEN </span><span class="s1">TIMESTAMPDIFF(</span><span class="s2">minute, </span><span class="s1">Post.updatedAt</span><span class="s2">, current_timestamp</span><span class="s1">()) &lt; </span><span class="s3">60</span>
+                             <span class="s2">THEN </span><span class="s1">CONCAT(TIMESTAMPDIFF(</span><span class="s2">minute, </span><span class="s1">Post.updatedAt</span><span class="s2">, current_timestamp</span><span class="s1">())</span><span class="s2">, </span><span class="s4">' 분 전'</span><span class="s1">)</span>
+                         <span class="s2">WHEN </span><span class="s1">TIMESTAMPDIFF(</span><span class="s2">hour, </span><span class="s1">Post.updatedAt</span><span class="s2">, current_timestamp</span><span class="s1">()) &lt; </span><span class="s3">24</span>
+                             <span class="s2">THEN </span><span class="s1">CONCAT(TIMESTAMPDIFF(</span><span class="s2">hour, </span><span class="s1">Post.updatedAt</span><span class="s2">, current_timestamp</span><span class="s1">())</span><span class="s2">, </span><span class="s4">' 시간 전'</span><span class="s1">)</span>
+                         <span class="s2">ELSE </span><span class="s1">CONCAT(DATEDIFF(Post.updatedAt</span><span class="s2">, current_timestamp</span><span class="s1">)</span><span class="s2">, </span><span class="s4">' 일 전'</span><span class="s1">)</span>
+               <span class="s2">END</span><span class="s1">)</span>
+           <span class="s2">ELSE </span><span class="s1">(</span><span class="s2">CASE</span>
+                     <span class="s2">WHEN </span><span class="s1">TIMESTAMPDIFF(</span><span class="s2">second, </span><span class="s1">Post.createdAt</span><span class="s2">, current_timestamp</span><span class="s1">()) &lt; </span><span class="s3">60</span>
+                         <span class="s2">THEN </span><span class="s1">CONCAT(TIMESTAMPDIFF(</span><span class="s2">second, </span><span class="s1">Post.createdAt</span><span class="s2">, current_timestamp</span><span class="s1">())</span><span class="s2">, </span><span class="s4">' 초 전'</span><span class="s1">)</span>
+                     <span class="s2">WHEN </span><span class="s1">TIMESTAMPDIFF(</span><span class="s2">minute, </span><span class="s1">Post.createdAt</span><span class="s2">, current_timestamp</span><span class="s1">()) &lt; </span><span class="s3">60</span>
+                         <span class="s2">THEN </span><span class="s1">CONCAT(TIMESTAMPDIFF(</span><span class="s2">minute, </span><span class="s1">Post.createdAt</span><span class="s2">, current_timestamp</span><span class="s1">())</span><span class="s2">, </span><span class="s4">' 분 전'</span><span class="s1">)</span>
+                     <span class="s2">WHEN </span><span class="s1">TIMESTAMPDIFF(</span><span class="s2">hour, </span><span class="s1">Post.createdAt</span><span class="s2">, current_timestamp</span><span class="s1">()) &lt; </span><span class="s3">24</span>
+                         <span class="s2">THEN </span><span class="s1">CONCAT(TIMESTAMPDIFF(</span><span class="s2">hour, </span><span class="s1">Post.createdAt</span><span class="s2">, current_timestamp</span><span class="s1">())</span><span class="s2">, </span><span class="s4">' 시간 전'</span><span class="s1">)</span>
+                     <span class="s2">ELSE </span><span class="s1">CONCAT(DATEDIFF(Post.createdAt</span><span class="s2">, current_timestamp</span><span class="s1">)</span><span class="s2">, </span><span class="s4">' 일 전'</span><span class="s1">)</span>
+               <span class="s2">END</span><span class="s1">)</span>
+           <span class="s2">END           AS </span><span class="s1">uploadedAt</span>
+<span class="s2">FROM </span><span class="s1">Post</span>
+         <span class="s2">INNER JOIN </span><span class="s1">Address</span><span class="s2">,</span>
+     <span class="s1">Interest</span><span class="s2">,</span>
+     <span class="s1">ChatRoom</span><span class="s2">,</span>
+     <span class="s2">User,</span>
+     <span class="s2">Comment</span>
+<span class="s2">WHERE </span><span class="s1">addressStatus = </span><span class="s4">'ACTIVE'</span>
+  <span class="s2">AND </span><span class="s1">Address.userId </span><span class="s2">IN </span><span class="s1">(</span><span class="s2">SELECT User</span><span class="s1">.userId</span>
+                         <span class="s2">FROM User</span>
+                                  <span class="s2">INNER JOIN </span><span class="s1">Post</span>
+                         <span class="s2">WHERE </span><span class="s1">Post.userId = </span><span class="s2">User</span><span class="s1">.userId</span>
+                         <span class="s2">GROUP BY User</span><span class="s1">.userId)</span>
+  <span class="s2">AND </span><span class="s1">Post.postId = Interest.postId</span>
+  <span class="s2">AND </span><span class="s1">Post.postId = ChatRoom.postId</span>
+  <span class="s2">AND </span><span class="s1">Post.postId = </span><span class="s2">Comment</span><span class="s1">.postId</span>
+  <span class="s2">AND </span><span class="s1">Post.userId = </span><span class="s2">User</span><span class="s1">.userId</span>
+<span class="s2">ORDER BY </span><span class="s1">Post.updatedAt </span><span class="s2">DESC;</span>
+
+
+<span class="s0">###카테고리 목록</span>
+<span class="s2">SELECT </span><span class="s1">*</span>
+<span class="s2">FROM </span><span class="s1">Category</span><span class="s2">;</span>
+
+<span class="s0">#Join</span>
+<span class="s2">Select </span><span class="s1">categoryName</span><span class="s2">, </span><span class="s1">categoryImgUrl </span><span class="s2">AS </span><span class="s1">categoryImage</span>
+<span class="s2">FROM </span><span class="s1">Category</span><span class="s2">;</span>
+
+<span class="s0">###채팅 목록</span>
+<span class="s2">SELECT </span><span class="s1">*</span>
+<span class="s2">FROM User</span>
+         <span class="s2">INNER JOIN Member</span>
+<span class="s2">WHERE Member</span><span class="s1">.userId = </span><span class="s2">User</span><span class="s1">.userId</span><span class="s2">;</span>
+<span class="s2">SELECT </span><span class="s1">*</span>
+<span class="s2">FROM </span><span class="s1">Address</span>
+<span class="s2">WHERE </span><span class="s1">Address.userId </span><span class="s2">IN </span><span class="s1">(</span><span class="s2">SELECT Member</span><span class="s1">.userId</span>
+                         <span class="s2">FROM User</span>
+                                  <span class="s2">INNER JOIN Member</span>
+                         <span class="s2">WHERE Member</span><span class="s1">.userId = </span><span class="s2">User</span><span class="s1">.userId)</span><span class="s2">;</span>
+<span class="s2">SELECT </span><span class="s1">*</span>
+<span class="s2">FROM </span><span class="s1">ChatMessage</span>
+<span class="s2">where </span><span class="s1">ChatMessage.userId </span><span class="s2">IN </span><span class="s1">(</span><span class="s2">SELECT Member</span><span class="s1">.userId</span>
+                             <span class="s2">FROM User</span>
+                                      <span class="s2">INNER JOIN Member</span>
+                             <span class="s2">WHERE Member</span><span class="s1">.userId = </span><span class="s2">User</span><span class="s1">.userId)</span><span class="s2">;</span>
+<span class="s2">SELECT </span><span class="s1">*</span>
+<span class="s2">FROM </span><span class="s1">Post</span>
+<span class="s2">WHERE </span><span class="s1">Post.postId </span><span class="s2">IN </span><span class="s1">(</span><span class="s2">SELECT </span><span class="s1">ChatRoom.postId</span>
+                      <span class="s2">FROM </span><span class="s1">ChatRoom</span>
+                               <span class="s2">INNER JOIN </span><span class="s1">Post</span>
+                      <span class="s2">WHERE </span><span class="s1">ChatRoom.postId = Post.postId)</span><span class="s2">;</span>
+<span class="s2">SELECT </span><span class="s1">*</span>
+<span class="s2">FROM </span><span class="s1">PostImageUrl</span>
+<span class="s2">WHERE </span><span class="s1">PostImageUrl.postId </span><span class="s2">IN </span><span class="s1">(</span><span class="s2">SELECT </span><span class="s1">Post.postId</span>
+                              <span class="s2">FROM </span><span class="s1">Post</span>
+                              <span class="s2">WHERE </span><span class="s1">Post.postId </span><span class="s2">IN </span><span class="s1">(</span><span class="s2">SELECT </span><span class="s1">ChatRoom.postId</span>
+                                                    <span class="s2">FROM </span><span class="s1">ChatRoom</span>
+                                                             <span class="s2">INNER JOIN </span><span class="s1">Post</span>
+                                                    <span class="s2">WHERE </span><span class="s1">ChatRoom.postId = Post.postId))</span><span class="s2">;</span>
+
+<span class="s0">#Sub Query</span>
+<span class="s2">SELECT </span><span class="s1">nickname</span><span class="s2">, </span><span class="s1">profilePhoto</span>
+<span class="s2">FROM User</span>
+         <span class="s2">INNER JOIN Member</span>
+<span class="s2">WHERE Member</span><span class="s1">.userId = </span><span class="s2">User</span><span class="s1">.userId</span><span class="s2">;</span>
+<span class="s2">SELECT </span><span class="s1">address</span>
+<span class="s2">FROM </span><span class="s1">Address</span>
+<span class="s2">WHERE </span><span class="s1">Address.userId </span><span class="s2">IN </span><span class="s1">(</span><span class="s2">SELECT Member</span><span class="s1">.userId</span>
+                         <span class="s2">FROM User</span>
+                                  <span class="s2">INNER JOIN Member</span>
+                         <span class="s2">WHERE Member</span><span class="s1">.userId = </span><span class="s2">User</span><span class="s1">.userId)</span>
+  <span class="s2">AND </span><span class="s1">addressStatus = </span><span class="s4">'ACTIVE'</span><span class="s2">;</span>
+<span class="s2">SELECT </span><span class="s1">message</span><span class="s2">, </span><span class="s1">updatedAt</span>
+<span class="s2">FROM </span><span class="s1">ChatMessage</span>
+<span class="s2">where </span><span class="s1">ChatMessage.userId </span><span class="s2">IN </span><span class="s1">(</span><span class="s2">SELECT Member</span><span class="s1">.userId</span>
+                             <span class="s2">FROM User</span>
+                                      <span class="s2">INNER JOIN Member</span>
+                             <span class="s2">WHERE Member</span><span class="s1">.userId = </span><span class="s2">User</span><span class="s1">.userId)</span>
+<span class="s2">ORDER BY </span><span class="s1">updatedAt </span><span class="s2">DESC;</span>
+<span class="s2">SELECT </span><span class="s1">postId</span>
+<span class="s2">FROM </span><span class="s1">Post</span>
+<span class="s2">WHERE </span><span class="s1">Post.postId </span><span class="s2">IN </span><span class="s1">(</span><span class="s2">SELECT </span><span class="s1">ChatRoom.postId</span>
+                      <span class="s2">FROM </span><span class="s1">ChatRoom</span>
+                               <span class="s2">INNER JOIN </span><span class="s1">Post</span>
+                      <span class="s2">WHERE </span><span class="s1">ChatRoom.postId = Post.postId)</span><span class="s2">;</span>
+<span class="s2">SELECT </span><span class="s1">imageUrl</span>
+<span class="s2">FROM </span><span class="s1">PostImageUrl</span>
+<span class="s2">WHERE </span><span class="s1">PostImageUrl.postId </span><span class="s2">IN </span><span class="s1">(</span><span class="s2">SELECT </span><span class="s1">Post.postId</span>
+                              <span class="s2">FROM </span><span class="s1">Post</span>
+                              <span class="s2">WHERE </span><span class="s1">Post.postId </span><span class="s2">IN </span><span class="s1">(</span><span class="s2">SELECT </span><span class="s1">ChatRoom.postId</span>
+                                                    <span class="s2">FROM </span><span class="s1">ChatRoom</span>
+                                                             <span class="s2">INNER JOIN </span><span class="s1">Post</span>
+                                                    <span class="s2">WHERE </span><span class="s1">ChatRoom.postId = Post.postId))</span>
+  <span class="s2">AND </span><span class="s1">imageUrlStatus = </span><span class="s4">'ACTIVE'</span><span class="s2">;</span>
+
+<span class="s0">#Join</span>
+<span class="s2">SELECT </span><span class="s1">nickname</span><span class="s2">,</span>
+       <span class="s1">profilePhoto</span><span class="s2">,</span>
+       <span class="s1">address</span><span class="s2">,</span>
+       <span class="s1">message</span><span class="s2">,</span>
+       <span class="s2">CASE</span>
+           <span class="s2">WHEN </span><span class="s1">TIMESTAMPDIFF(</span><span class="s2">second, </span><span class="s1">ChatMessage.updatedAt</span><span class="s2">, current_timestamp</span><span class="s1">()) &lt; </span><span class="s3">60</span>
+               <span class="s2">THEN </span><span class="s1">CONCAT(TIMESTAMPDIFF(</span><span class="s2">second, </span><span class="s1">ChatMessage.updatedAt</span><span class="s2">, current_timestamp</span><span class="s1">())</span><span class="s2">, </span><span class="s4">' 초 전'</span><span class="s1">)</span>
+           <span class="s2">WHEN </span><span class="s1">TIMESTAMPDIFF(</span><span class="s2">minute, </span><span class="s1">ChatMessage.updatedAt</span><span class="s2">, current_timestamp</span><span class="s1">()) &lt; </span><span class="s3">60</span>
+               <span class="s2">THEN </span><span class="s1">CONCAT(TIMESTAMPDIFF(</span><span class="s2">minute, </span><span class="s1">ChatMessage.updatedAt</span><span class="s2">, current_timestamp</span><span class="s1">())</span><span class="s2">, </span><span class="s4">' 분 전'</span><span class="s1">)</span>
+           <span class="s2">WHEN </span><span class="s1">TIMESTAMPDIFF(</span><span class="s2">hour, </span><span class="s1">ChatMessage.updatedAt</span><span class="s2">, current_timestamp</span><span class="s1">()) &lt; </span><span class="s3">24</span>
+               <span class="s2">THEN </span><span class="s1">CONCAT(TIMESTAMPDIFF(</span><span class="s2">hour, </span><span class="s1">ChatMessage.updatedAt</span><span class="s2">, current_timestamp</span><span class="s1">())</span><span class="s2">, </span><span class="s4">' 시간 전'</span><span class="s1">)</span>
+           <span class="s2">ELSE </span><span class="s1">CONCAT(DATEDIFF(ChatMessage.updatedAt</span><span class="s2">, current_timestamp</span><span class="s1">)</span><span class="s2">, </span><span class="s4">' 일 전'</span><span class="s1">)</span>
+           <span class="s2">END  AS </span><span class="s1">uploadedAt</span><span class="s2">,</span>
+       <span class="s1">imageUrl </span><span class="s2">AS </span><span class="s1">representativeImage</span>
+<span class="s2">FROM User</span>
+         <span class="s2">INNER JOIN Member,</span>
+     <span class="s1">Address</span><span class="s2">,</span>
+     <span class="s1">ChatMessage</span><span class="s2">,</span>
+     <span class="s1">PostImageUrl</span>
+<span class="s2">WHERE Member</span><span class="s1">.userId = </span><span class="s2">User</span><span class="s1">.userId</span>
+  <span class="s2">AND </span><span class="s1">Address.userId </span><span class="s2">IN </span><span class="s1">(</span><span class="s2">SELECT Member</span><span class="s1">.userId</span>
+                         <span class="s2">FROM User</span>
+                                  <span class="s2">INNER JOIN Member</span>
+                         <span class="s2">WHERE Member</span><span class="s1">.userId = </span><span class="s2">User</span><span class="s1">.userId)</span>
+  <span class="s2">AND </span><span class="s1">addressStatus = </span><span class="s4">'ACTIVE'</span>
+  <span class="s2">AND </span><span class="s1">ChatMessage.userId </span><span class="s2">IN </span><span class="s1">(</span><span class="s2">SELECT Member</span><span class="s1">.userId</span>
+                             <span class="s2">FROM User</span>
+                                      <span class="s2">INNER JOIN Member</span>
+                             <span class="s2">WHERE Member</span><span class="s1">.userId = </span><span class="s2">User</span><span class="s1">.userId)</span>
+  <span class="s2">AND </span><span class="s1">PostImageUrl.postId </span><span class="s2">IN </span><span class="s1">(</span><span class="s2">SELECT </span><span class="s1">Post.postId</span>
+                              <span class="s2">FROM </span><span class="s1">Post</span>
+                              <span class="s2">WHERE </span><span class="s1">Post.postId </span><span class="s2">IN </span><span class="s1">(</span><span class="s2">SELECT </span><span class="s1">ChatRoom.postId</span>
+                                                    <span class="s2">FROM </span><span class="s1">ChatRoom</span>
+                                                             <span class="s2">INNER JOIN </span><span class="s1">Post</span>
+                                                    <span class="s2">WHERE </span><span class="s1">ChatRoom.postId = Post.postId))</span>
+  <span class="s2">AND </span><span class="s1">imageUrlStatus = </span><span class="s4">'ACTIVE'</span>
+<span class="s2">ORDER BY </span><span class="s1">ChatMessage.updatedAt </span><span class="s2">DESC;</span>
+
+<span class="s0">###관심 목록</span>
+<span class="s2">SELECT </span><span class="s1">*</span>
+<span class="s2">FROM User</span>
+<span class="s2">WHERE User</span><span class="s1">.userId </span><span class="s2">IN </span><span class="s1">(</span><span class="s2">SELECT </span><span class="s1">Post.userId</span>
+                      <span class="s2">FROM </span><span class="s1">Post</span>
+                      <span class="s2">WHERE </span><span class="s1">salesStatus = </span><span class="s4">'SOLD'</span><span class="s1">)</span><span class="s2">;</span>
+<span class="s2">SELECT </span><span class="s1">*</span>
+<span class="s2">FROM </span><span class="s1">Address</span>
+<span class="s2">WHERE </span><span class="s1">Address.userId </span><span class="s2">IN </span><span class="s1">(</span><span class="s2">SELECT User</span><span class="s1">.userId</span>
+                         <span class="s2">FROM User</span>
+                         <span class="s2">WHERE User</span><span class="s1">.userId </span><span class="s2">IN </span><span class="s1">(</span><span class="s2">SELECT </span><span class="s1">Post.userId</span>
+                                               <span class="s2">FROM </span><span class="s1">Post</span>
+                                               <span class="s2">WHERE </span><span class="s1">salesStatus = </span><span class="s4">'SOLD'</span><span class="s1">))</span>
+  <span class="s2">AND </span><span class="s1">addressStatus = </span><span class="s4">'ACTIVE'</span><span class="s2">;</span>
+<span class="s2">SELECT </span><span class="s1">*</span>
+<span class="s2">FROM </span><span class="s1">Post</span>
+<span class="s2">WHERE </span><span class="s1">salesStatus = </span><span class="s4">'SOLD'</span><span class="s2">;</span>
+<span class="s2">SELECT </span><span class="s1">*</span>
+<span class="s2">FROM </span><span class="s1">PostImageUrl</span>
+<span class="s2">WHERE </span><span class="s1">PostImageUrl.postId </span><span class="s2">IN </span><span class="s1">(</span><span class="s2">SELECT </span><span class="s1">Post.postId</span>
+                              <span class="s2">FROM </span><span class="s1">Post</span>
+                              <span class="s2">WHERE </span><span class="s1">salesStatus = </span><span class="s4">'SOLD'</span><span class="s1">)</span>
+  <span class="s2">AND </span><span class="s1">imageUrlStatus = </span><span class="s4">'ACTIVE'</span><span class="s2">;</span>
+<span class="s2">SELECT Count</span><span class="s1">(interestId) </span><span class="s2">AS </span><span class="s1">interestCount</span>
+<span class="s2">FROM </span><span class="s1">Interest</span>
+         <span class="s2">INNER JOIN </span><span class="s1">Post</span>
+<span class="s2">WHERE </span><span class="s1">Post.postId = Interest.postId</span><span class="s2">;</span>
+<span class="s2">SELECT Count</span><span class="s1">(chatRoomId) </span><span class="s2">AS </span><span class="s1">chatCount</span>
+<span class="s2">FROM </span><span class="s1">ChatRoom</span>
+         <span class="s2">INNER JOIN </span><span class="s1">Post</span>
+<span class="s2">WHERE </span><span class="s1">Post.postId = ChatRoom.postId</span><span class="s2">;</span>
+
+<span class="s0">#Sub Query</span>
+<span class="s2">SELECT </span><span class="s1">address</span>
+<span class="s2">FROM </span><span class="s1">Address</span>
+<span class="s2">WHERE </span><span class="s1">Address.userId </span><span class="s2">IN </span><span class="s1">(</span><span class="s2">SELECT User</span><span class="s1">.userId</span>
+                         <span class="s2">FROM User</span>
+                         <span class="s2">WHERE User</span><span class="s1">.userId </span><span class="s2">IN </span><span class="s1">(</span><span class="s2">SELECT </span><span class="s1">Post.userId</span>
+                                               <span class="s2">FROM </span><span class="s1">Post</span>
+                                               <span class="s2">WHERE </span><span class="s1">salesStatus = </span><span class="s4">'SOLD'</span><span class="s1">))</span>
+  <span class="s2">AND </span><span class="s1">addressStatus = </span><span class="s4">'ACTIVE'</span><span class="s2">;</span>
+<span class="s2">SELECT </span><span class="s1">title</span><span class="s2">, </span><span class="s1">salesStatus</span>
+<span class="s2">FROM </span><span class="s1">Post</span>
+<span class="s2">WHERE </span><span class="s1">salesStatus = </span><span class="s4">'SOLD'</span><span class="s2">;</span>
+<span class="s2">SELECT </span><span class="s1">imageUrl</span>
+<span class="s2">FROM </span><span class="s1">PostImageUrl</span>
+<span class="s2">WHERE </span><span class="s1">PostImageUrl.postId </span><span class="s2">IN </span><span class="s1">(</span><span class="s2">SELECT </span><span class="s1">Post.postId</span>
+                              <span class="s2">FROM </span><span class="s1">Post</span>
+                              <span class="s2">WHERE </span><span class="s1">salesStatus = </span><span class="s4">'SOLD'</span><span class="s1">)</span>
+  <span class="s2">AND </span><span class="s1">imageUrlStatus = </span><span class="s4">'ACTIVE'</span><span class="s2">;</span>
+<span class="s2">SELECT Count</span><span class="s1">(interestId) </span><span class="s2">AS </span><span class="s1">interestCount</span>
+<span class="s2">FROM </span><span class="s1">Interest</span>
+         <span class="s2">INNER JOIN </span><span class="s1">Post</span>
+<span class="s2">WHERE </span><span class="s1">Post.postId = Interest.postId</span><span class="s2">;</span>
+<span class="s2">SELECT Count</span><span class="s1">(chatRoomId) </span><span class="s2">AS </span><span class="s1">chatCount</span>
+<span class="s2">FROM </span><span class="s1">ChatRoom</span>
+         <span class="s2">INNER JOIN </span><span class="s1">Post</span>
+<span class="s2">WHERE </span><span class="s1">Post.postId = ChatRoom.postId</span><span class="s2">;</span>
+
+<span class="s0">#Join</span>
+<span class="s2">SELECT </span><span class="s1">address</span><span class="s2">,</span>
+       <span class="s1">title</span><span class="s2">,</span>
+       <span class="s1">salesStatus</span><span class="s2">,</span>
+       <span class="s1">imageUrl          </span><span class="s2">AS </span><span class="s1">representativeImageUrl</span><span class="s2">,</span>
+       <span class="s2">Count</span><span class="s1">(interestId) </span><span class="s2">AS </span><span class="s1">interestCount</span><span class="s2">,</span>
+       <span class="s2">Count</span><span class="s1">(chatRoomId) </span><span class="s2">AS </span><span class="s1">chatCount</span>
+<span class="s2">FROM </span><span class="s1">Address</span>
+         <span class="s2">INNER JOIN </span><span class="s1">Post</span><span class="s2">,</span>
+     <span class="s1">PostImageUrl</span><span class="s2">,</span>
+     <span class="s1">Interest</span><span class="s2">,</span>
+     <span class="s1">ChatRoom</span>
+<span class="s2">WHERE </span><span class="s1">Address.userId </span><span class="s2">IN </span><span class="s1">(</span><span class="s2">SELECT User</span><span class="s1">.userId</span>
+                         <span class="s2">FROM User</span>
+                         <span class="s2">WHERE User</span><span class="s1">.userId </span><span class="s2">IN </span><span class="s1">(</span><span class="s2">SELECT </span><span class="s1">Post.userId</span>
+                                               <span class="s2">FROM </span><span class="s1">Post</span>
+                                               <span class="s2">WHERE </span><span class="s1">salesStatus = </span><span class="s4">'SOLD'</span><span class="s1">))</span>
+  <span class="s2">AND </span><span class="s1">addressStatus = </span><span class="s4">'ACTIVE'</span>
+  <span class="s2">AND </span><span class="s1">salesStatus = </span><span class="s4">'SOLD'</span>
+  <span class="s2">AND </span><span class="s1">PostImageUrl.postId </span><span class="s2">IN </span><span class="s1">(</span><span class="s2">SELECT </span><span class="s1">Post.postId</span>
+                              <span class="s2">FROM </span><span class="s1">Post</span>
+                              <span class="s2">WHERE </span><span class="s1">salesStatus = </span><span class="s4">'SOLD'</span><span class="s1">)</span>
+  <span class="s2">AND </span><span class="s1">imageUrlStatus = </span><span class="s4">'ACTIVE'</span>
+  <span class="s2">AND </span><span class="s1">Post.postId = Interest.postId</span>
+  <span class="s2">AND </span><span class="s1">Post.postId = ChatRoom.postId</span><span class="s2">;</span>
+
+<span class="s0">###후기 목록</span>
+<span class="s2">SELECT </span><span class="s1">*</span>
+<span class="s2">FROM User</span>
+<span class="s2">WHERE User</span><span class="s1">.userId </span><span class="s2">IN </span><span class="s1">(</span><span class="s2">SELECT </span><span class="s1">Review.userId</span>
+                      <span class="s2">FROM </span><span class="s1">Review)</span><span class="s2">;</span>
+<span class="s2">SELECT </span><span class="s1">*</span>
+<span class="s2">FROM </span><span class="s1">Address</span>
+<span class="s2">WHERE </span><span class="s1">Address.userId </span><span class="s2">IN </span><span class="s1">(</span><span class="s2">SELECT User</span><span class="s1">.userId</span>
+                         <span class="s2">FROM User</span>
+                         <span class="s2">WHERE User</span><span class="s1">.userId </span><span class="s2">IN </span><span class="s1">(</span><span class="s2">SELECT </span><span class="s1">Review.userId</span>
+                                               <span class="s2">FROM </span><span class="s1">Review))</span>
+  <span class="s2">AND </span><span class="s1">addressStatus = </span><span class="s4">'ACTIVE'</span><span class="s2">;</span>
+<span class="s2">SELECT </span><span class="s1">*</span>
+<span class="s2">FROM </span><span class="s1">Review</span><span class="s2">;</span>
+<span class="s2">SELECT </span><span class="s1">*</span>
+<span class="s2">FROM </span><span class="s1">Badge</span>
+<span class="s2">WHERE </span><span class="s1">Badge.userId </span><span class="s2">IN </span><span class="s1">(</span><span class="s2">SELECT User</span><span class="s1">.userId</span>
+                       <span class="s2">FROM User</span>
+                       <span class="s2">WHERE User</span><span class="s1">.userId </span><span class="s2">IN </span><span class="s1">(</span><span class="s2">SELECT </span><span class="s1">Review.userId</span>
+                                             <span class="s2">FROM </span><span class="s1">Review))</span>
+  <span class="s2">AND </span><span class="s1">badgeStatus = </span><span class="s4">'ACTIVE'</span><span class="s2">;</span>
+
+<span class="s2">SELECT </span><span class="s1">*</span>
+<span class="s2">FROM </span><span class="s1">BadgeTag</span>
+<span class="s2">WHERE </span><span class="s1">badgeTagId </span><span class="s2">IN </span><span class="s1">(</span><span class="s2">SELECT </span><span class="s1">Badge.badgeTagId</span>
+                     <span class="s2">FROM </span><span class="s1">Badge</span>
+                     <span class="s2">WHERE </span><span class="s1">Badge.userId </span><span class="s2">IN </span><span class="s1">(</span><span class="s2">SELECT User</span><span class="s1">.userId</span>
+                                            <span class="s2">FROM User</span>
+                                            <span class="s2">WHERE User</span><span class="s1">.userId </span><span class="s2">IN </span><span class="s1">(</span><span class="s2">SELECT </span><span class="s1">Review.userId</span>
+                                                                  <span class="s2">FROM </span><span class="s1">Review))</span>
+                       <span class="s2">AND </span><span class="s1">badgeStatus = </span><span class="s4">'ACTIVE'</span><span class="s1">)</span><span class="s2">;</span>
+
+<span class="s0">#Sub Query</span>
+<span class="s2">SELECT </span><span class="s1">nickname</span><span class="s2">, </span><span class="s1">profilePhoto</span>
+<span class="s2">FROM User</span>
+<span class="s2">WHERE User</span><span class="s1">.userId </span><span class="s2">IN </span><span class="s1">(</span><span class="s2">SELECT </span><span class="s1">Review.userId</span>
+                      <span class="s2">FROM </span><span class="s1">Review)</span><span class="s2">;</span>
+<span class="s2">SELECT </span><span class="s1">address</span>
+<span class="s2">FROM </span><span class="s1">Address</span>
+<span class="s2">WHERE </span><span class="s1">Address.userId </span><span class="s2">IN </span><span class="s1">(</span><span class="s2">SELECT User</span><span class="s1">.userId</span>
+                         <span class="s2">FROM User</span>
+                         <span class="s2">WHERE User</span><span class="s1">.userId </span><span class="s2">IN </span><span class="s1">(</span><span class="s2">SELECT </span><span class="s1">Review.userId</span>
+                                               <span class="s2">FROM </span><span class="s1">Review))</span>
+  <span class="s2">AND </span><span class="s1">addressStatus = </span><span class="s4">'ACTIVE'</span><span class="s2">;</span>
+<span class="s2">SELECT </span><span class="s1">content</span><span class="s2">, </span><span class="s1">updatedAt</span>
+<span class="s2">FROM </span><span class="s1">Review</span><span class="s2">;</span>
+<span class="s2">SELECT </span><span class="s1">activeBadgeImgUrl</span>
+<span class="s2">FROM </span><span class="s1">BadgeTag</span>
+<span class="s2">WHERE </span><span class="s1">badgeTagId </span><span class="s2">IN </span><span class="s1">(</span><span class="s2">SELECT </span><span class="s1">Badge.badgeTagId</span>
+                     <span class="s2">FROM </span><span class="s1">Badge</span>
+                     <span class="s2">WHERE </span><span class="s1">Badge.userId </span><span class="s2">IN </span><span class="s1">(</span><span class="s2">SELECT User</span><span class="s1">.userId</span>
+                                            <span class="s2">FROM User</span>
+                                            <span class="s2">WHERE User</span><span class="s1">.userId </span><span class="s2">IN </span><span class="s1">(</span><span class="s2">SELECT </span><span class="s1">Review.userId</span>
+                                                                  <span class="s2">FROM </span><span class="s1">Review))</span>
+                       <span class="s2">AND </span><span class="s1">badgeStatus = </span><span class="s4">'ACTIVE'</span><span class="s1">)</span><span class="s2">;</span>
+
+<span class="s0">#Join</span>
+<span class="s2">SELECT </span><span class="s1">nickname</span><span class="s2">,</span>
+       <span class="s1">profilePhoto</span><span class="s2">,</span>
+       <span class="s1">address</span><span class="s2">,</span>
+       <span class="s1">content</span><span class="s2">,</span>
+       <span class="s2">CASE</span>
+           <span class="s2">WHEN </span><span class="s1">TIMESTAMPDIFF(</span><span class="s2">second, </span><span class="s1">Review.updatedAt</span><span class="s2">, current_timestamp</span><span class="s1">()) &lt; </span><span class="s3">60</span>
+               <span class="s2">THEN </span><span class="s1">CONCAT(TIMESTAMPDIFF(</span><span class="s2">second, </span><span class="s1">Review.updatedAt</span><span class="s2">, current_timestamp</span><span class="s1">())</span><span class="s2">, </span><span class="s4">' 초 전'</span><span class="s1">)</span>
+           <span class="s2">WHEN </span><span class="s1">TIMESTAMPDIFF(</span><span class="s2">minute, </span><span class="s1">Review.updatedAt</span><span class="s2">, current_timestamp</span><span class="s1">()) &lt; </span><span class="s3">60</span>
+               <span class="s2">THEN </span><span class="s1">CONCAT(TIMESTAMPDIFF(</span><span class="s2">minute, </span><span class="s1">Review.updatedAt</span><span class="s2">, current_timestamp</span><span class="s1">())</span><span class="s2">, </span><span class="s4">' 분 전'</span><span class="s1">)</span>
+           <span class="s2">WHEN </span><span class="s1">TIMESTAMPDIFF(</span><span class="s2">hour, </span><span class="s1">Review.updatedAt</span><span class="s2">, current_timestamp</span><span class="s1">()) &lt; </span><span class="s3">24</span>
+               <span class="s2">THEN </span><span class="s1">CONCAT(TIMESTAMPDIFF(</span><span class="s2">hour, </span><span class="s1">Review.updatedAt</span><span class="s2">, current_timestamp</span><span class="s1">())</span><span class="s2">, </span><span class="s4">' 시간 전'</span><span class="s1">)</span>
+           <span class="s2">ELSE </span><span class="s1">CONCAT(DATEDIFF(Review.updatedAt</span><span class="s2">, current_timestamp</span><span class="s1">)</span><span class="s2">, </span><span class="s4">' 일 전'</span><span class="s1">)</span>
+           <span class="s2">END           AS </span><span class="s1">uploadedAt</span><span class="s2">,</span>
+       <span class="s1">activeBadgeImgUrl </span><span class="s2">AS </span><span class="s1">representativeBadge</span>
+<span class="s2">FROM User</span>
+         <span class="s2">INNER JOIN </span><span class="s1">Address</span><span class="s2">,</span>
+     <span class="s1">Review</span><span class="s2">,</span>
+     <span class="s1">BadgeTag</span>
+<span class="s2">WHERE User</span><span class="s1">.userId </span><span class="s2">IN </span><span class="s1">(</span><span class="s2">SELECT </span><span class="s1">Review.userId</span>
+                      <span class="s2">FROM </span><span class="s1">Review)</span>
+  <span class="s2">AND </span><span class="s1">Address.userId </span><span class="s2">IN </span><span class="s1">(</span><span class="s2">SELECT User</span><span class="s1">.userId</span>
+                         <span class="s2">FROM User</span>
+                         <span class="s2">WHERE User</span><span class="s1">.userId </span><span class="s2">IN </span><span class="s1">(</span><span class="s2">SELECT </span><span class="s1">Review.userId</span>
+                                               <span class="s2">FROM </span><span class="s1">Review))</span>
+  <span class="s2">AND </span><span class="s1">addressStatus = </span><span class="s4">'ACTIVE'</span>
+  <span class="s2">AND </span><span class="s1">badgeTagId </span><span class="s2">IN </span><span class="s1">(</span><span class="s2">SELECT </span><span class="s1">Badge.badgeTagId</span>
+                     <span class="s2">FROM </span><span class="s1">Badge</span>
+                     <span class="s2">WHERE </span><span class="s1">Badge.userId </span><span class="s2">IN </span><span class="s1">(</span><span class="s2">SELECT User</span><span class="s1">.userId</span>
+                                            <span class="s2">FROM User</span>
+                                            <span class="s2">WHERE User</span><span class="s1">.userId </span><span class="s2">IN </span><span class="s1">(</span><span class="s2">SELECT </span><span class="s1">Review.userId</span>
+                                                                  <span class="s2">FROM </span><span class="s1">Review))</span>
+                       <span class="s2">AND </span><span class="s1">badgeStatus = </span><span class="s4">'ACTIVE'</span><span class="s1">)</span><span class="s2">;</span>
+
+<span class="s0">###프로필</span>
+<span class="s2">SELECT </span><span class="s1">*</span>
+<span class="s2">FROM User</span>
+<span class="s2">WHERE </span><span class="s1">userId = </span><span class="s3">1</span><span class="s2">;</span>
+<span class="s2">SELECT </span><span class="s1">*</span>
+<span class="s2">FROM </span><span class="s1">Badge</span>
+<span class="s2">WHERE </span><span class="s1">userId = </span><span class="s3">1</span><span class="s2">;</span>
+<span class="s2">SELECT </span><span class="s1">*</span>
+<span class="s2">FROM </span><span class="s1">Post</span>
+<span class="s2">WHERE </span><span class="s1">userId = </span><span class="s3">1</span>
+  <span class="s2">AND </span><span class="s1">salesStatus = </span><span class="s4">'SOLD'</span><span class="s2">;</span>
+<span class="s2">SELECT </span><span class="s1">*</span>
+<span class="s2">FROM </span><span class="s1">MannerTag</span>
+<span class="s2">WHERE </span><span class="s1">userId = </span><span class="s3">1</span><span class="s2">;</span>
+<span class="s2">SELECT </span><span class="s1">*</span>
+<span class="s2">FROM </span><span class="s1">Review</span>
+<span class="s2">WHERE </span><span class="s1">userId = </span><span class="s3">1</span><span class="s2">;</span>
+
+<span class="s0">#Sub Query</span>
+<span class="s2">SELECT </span><span class="s1">nickname</span><span class="s2">, </span><span class="s1">mannerTemp</span><span class="s2">, </span><span class="s1">retransactionHopeRate</span>
+<span class="s2">FROM User</span>
+<span class="s2">WHERE </span><span class="s1">userId = </span><span class="s3">1</span><span class="s2">;</span>
+<span class="s2">SELECT Count</span><span class="s1">(badgeId)</span>
+<span class="s2">FROM </span><span class="s1">Badge</span>
+<span class="s2">WHERE </span><span class="s1">userId = </span><span class="s3">1</span><span class="s2">;</span>
+<span class="s2">SELECT Count</span><span class="s1">(postId)</span>
+<span class="s2">FROM </span><span class="s1">Post</span>
+<span class="s2">WHERE </span><span class="s1">userId = </span><span class="s3">1</span>
+  <span class="s2">AND </span><span class="s1">salesStatus = </span><span class="s4">'SOLD'</span><span class="s2">;</span>
+<span class="s2">SELECT Count</span><span class="s1">(mannerTagId)</span>
+<span class="s2">FROM </span><span class="s1">MannerTag</span>
+<span class="s2">WHERE </span><span class="s1">userId = </span><span class="s3">1</span><span class="s2">;</span>
+<span class="s2">SELECT Count</span><span class="s1">(reviewId)</span>
+<span class="s2">FROM </span><span class="s1">Review</span>
+<span class="s2">WHERE </span><span class="s1">userId = </span><span class="s3">1</span><span class="s2">;</span>
+
+<span class="s0">#Join</span>
+<span class="s2">SELECT </span><span class="s1">nickname</span><span class="s2">,</span>
+       <span class="s1">mannerTemp</span><span class="s2">,</span>
+       <span class="s1">retransactionHopeRate</span><span class="s2">,</span>
+       <span class="s2">Count</span><span class="s1">(badgeId)     </span><span class="s2">AS </span><span class="s1">badgeCount</span><span class="s2">,</span>
+       <span class="s2">Count</span><span class="s1">(Post.postId) </span><span class="s2">AS </span><span class="s1">soldProductCount</span><span class="s2">,</span>
+       <span class="s2">Count</span><span class="s1">(mannerTagId) </span><span class="s2">AS </span><span class="s1">MannerTagCount</span><span class="s2">,</span>
+       <span class="s2">Count</span><span class="s1">(reviewId)    </span><span class="s2">AS </span><span class="s1">reviewCount</span>
+<span class="s2">FROM User</span>
+         <span class="s2">INNER JOIN </span><span class="s1">Post</span><span class="s2">,</span>
+     <span class="s1">Badge</span><span class="s2">,</span>
+     <span class="s1">MannerTag</span><span class="s2">,</span>
+     <span class="s1">Review</span>
+<span class="s2">WHERE User</span><span class="s1">.userId = </span><span class="s3">1</span>
+  <span class="s2">AND </span><span class="s1">salesStatus = </span><span class="s4">'SOLD'</span><span class="s2">;</span>
+
+<span class="s0">###판매 상품 목록</span>
+<span class="s2">SELECT </span><span class="s1">*</span>
+<span class="s2">FROM User</span>
+<span class="s2">WHERE </span><span class="s1">userId = </span><span class="s3">1</span><span class="s2">;</span>
+<span class="s2">SELECT </span><span class="s1">*</span>
+<span class="s2">FROM </span><span class="s1">Post</span>
+<span class="s2">WHERE </span><span class="s1">userId = </span><span class="s3">1</span><span class="s2">;</span>
+<span class="s2">SELECT </span><span class="s1">*</span>
+<span class="s2">FROM </span><span class="s1">Interest</span>
+<span class="s2">WHERE </span><span class="s1">userId = </span><span class="s3">1</span>
+  <span class="s2">AND </span><span class="s1">Interest.postId </span><span class="s2">IN </span><span class="s1">(</span><span class="s2">SELECT </span><span class="s1">*</span>
+                          <span class="s2">FROM </span><span class="s1">Post</span>
+                          <span class="s2">WHERE </span><span class="s1">userId = </span><span class="s3">1</span>
+                            <span class="s2">AND </span><span class="s1">salesStatus = </span><span class="s4">'ONSALE'</span><span class="s1">)</span><span class="s2">;</span>
+
+
+<span class="s0">#Sub Query</span>
+<span class="s2">SELECT </span><span class="s1">profilePhoto</span><span class="s2">, </span><span class="s1">nickname</span>
+<span class="s2">FROM User</span>
+<span class="s2">WHERE </span><span class="s1">userId = </span><span class="s3">1</span><span class="s2">;</span>
+<span class="s2">SELECT </span><span class="s1">dealAddress</span><span class="s2">, </span><span class="s1">updatedAt</span><span class="s2">, </span><span class="s1">title</span>
+<span class="s2">FROM </span><span class="s1">Post</span>
+<span class="s2">WHERE </span><span class="s1">userId = </span><span class="s3">1</span>
+  <span class="s2">AND </span><span class="s1">salesStatus = </span><span class="s4">'ONSALE'</span><span class="s2">;</span>
+<span class="s2">SELECT COUNT</span><span class="s1">(salesStatus) </span><span class="s2">AS </span><span class="s1">onSaleCount</span>
+<span class="s2">FROM </span><span class="s1">Post</span>
+<span class="s2">WHERE </span><span class="s1">userId = </span><span class="s3">1</span>
+  <span class="s2">and </span><span class="s1">salesStatus = </span><span class="s4">'ONSALE'</span><span class="s2">;</span>
+<span class="s2">SELECT Count</span><span class="s1">(interestId) </span><span class="s2">AS </span><span class="s1">interestCount</span>
+<span class="s2">FROM </span><span class="s1">Interest</span>
+<span class="s2">WHERE </span><span class="s1">userId = </span><span class="s3">1</span>
+  <span class="s2">AND </span><span class="s1">Interest.postId </span><span class="s2">IN </span><span class="s1">(</span><span class="s2">SELECT </span><span class="s1">postId</span>
+                          <span class="s2">FROM </span><span class="s1">Post</span>
+                          <span class="s2">WHERE </span><span class="s1">userId = </span><span class="s3">1</span>
+                            <span class="s2">AND </span><span class="s1">salesStatus = </span><span class="s4">'ONSALE'</span><span class="s1">)</span><span class="s2">;</span>
+
+<span class="s0">#Join</span>
+<span class="s2">SELECT </span><span class="s1">profilePhoto</span><span class="s2">,</span>
+       <span class="s1">nickname</span><span class="s2">,</span>
+       <span class="s1">dealAddress</span><span class="s2">,</span>
+       <span class="s1">title</span><span class="s2">,</span>
+       <span class="s2">CASE</span>
+           <span class="s2">WHEN </span><span class="s1">TIMESTAMPDIFF(</span><span class="s2">second, </span><span class="s1">Post.updatedAt</span><span class="s2">, current_timestamp</span><span class="s1">()) &lt; </span><span class="s3">60</span>
+               <span class="s2">THEN </span><span class="s1">CONCAT(TIMESTAMPDIFF(</span><span class="s2">second, </span><span class="s1">Post.updatedAt</span><span class="s2">, current_timestamp</span><span class="s1">())</span><span class="s2">, </span><span class="s4">' 초 전'</span><span class="s1">)</span>
+           <span class="s2">WHEN </span><span class="s1">TIMESTAMPDIFF(</span><span class="s2">minute, </span><span class="s1">Post.updatedAt</span><span class="s2">, current_timestamp</span><span class="s1">()) &lt; </span><span class="s3">60</span>
+               <span class="s2">THEN </span><span class="s1">CONCAT(TIMESTAMPDIFF(</span><span class="s2">minute, </span><span class="s1">Post.updatedAt</span><span class="s2">, current_timestamp</span><span class="s1">())</span><span class="s2">, </span><span class="s4">' 분 전'</span><span class="s1">)</span>
+           <span class="s2">WHEN </span><span class="s1">TIMESTAMPDIFF(</span><span class="s2">hour, </span><span class="s1">Post.updatedAt</span><span class="s2">, current_timestamp</span><span class="s1">()) &lt; </span><span class="s3">24</span>
+               <span class="s2">THEN </span><span class="s1">CONCAT(TIMESTAMPDIFF(</span><span class="s2">hour, </span><span class="s1">Post.updatedAt</span><span class="s2">, current_timestamp</span><span class="s1">())</span><span class="s2">, </span><span class="s4">' 시간 전'</span><span class="s1">)</span>
+           <span class="s2">ELSE </span><span class="s1">CONCAT(DATEDIFF(Post.updatedAt</span><span class="s2">, current_timestamp</span><span class="s1">)</span><span class="s2">, </span><span class="s4">' 일 전'</span><span class="s1">)</span>
+           <span class="s2">END           AS </span><span class="s1">uploadedAt</span><span class="s2">,</span>
+       <span class="s2">Count</span><span class="s1">(interestId) </span><span class="s2">AS </span><span class="s1">interestCount</span><span class="s2">,</span>
+       <span class="s2">Count</span><span class="s1">(Post.postId)     </span><span class="s2">AS </span><span class="s1">onSaleCount</span>
+<span class="s2">FROM User</span>
+         <span class="s2">INNER JOIN </span><span class="s1">Post</span><span class="s2">,</span>
+     <span class="s1">Interest</span>
+<span class="s2">WHERE User</span><span class="s1">.userId = </span><span class="s3">1</span>
+  <span class="s2">AND </span><span class="s1">salesStatus = </span><span class="s4">'ONSALE'</span>
+  <span class="s2">AND </span><span class="s1">Interest.postId </span><span class="s2">IN </span><span class="s1">(</span><span class="s2">SELECT </span><span class="s1">userId</span>
+                          <span class="s2">FROM </span><span class="s1">Post</span>
+                          <span class="s2">WHERE </span><span class="s1">Post.userId = </span><span class="s3">1</span>
+                            <span class="s2">AND </span><span class="s1">salesStatus = </span><span class="s4">'ONSALE'</span><span class="s1">)</span><span class="s2">;</span></pre>
+</body>
+</html>
